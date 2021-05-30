@@ -1,4 +1,4 @@
-use optimization::number_system::dual_scalar::DualScalar;
+use optimization::number_system::DualScalar;
 use approx::assert_abs_diff_eq;
 
 

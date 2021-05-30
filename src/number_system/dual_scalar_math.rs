@@ -3,7 +3,7 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
 
-use crate::number_system::dual_scalar::DualScalar;
+use crate::number_system::DualScalar;
 
 
 impl DualScalar {
