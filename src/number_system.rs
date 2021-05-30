@@ -5,3 +5,8 @@
 mod dual_scalar;
 mod dual_scalar_math;
 pub use dual_scalar::DualScalar;
+
+
+mod dual;
+mod dual_math;
+pub use dual::Dual;
