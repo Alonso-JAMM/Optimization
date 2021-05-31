@@ -4,6 +4,9 @@
 
 pub mod number_system;
 
+pub mod line_search;
+
+
 #[cfg(test)]
 mod tests {
     #[test]
