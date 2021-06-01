@@ -32,7 +32,7 @@ impl LineSearch {
         LineSearch {
             c1: 1e-4,
             c2: 0.9,
-            i_max: 1_000,
+            i_max: 100,
             alpha_max: 1e3,
             f: func,
             phi_0: DualScalar::new(),
@@ -59,6 +59,7 @@ impl LineSearch {
 
         let mut i: u32 = 1;
         while i < self.i_max {
+//             println!("      i={}, alpha_i={}", i, alpha_i);
 
             if phi_i.re > self.phi_0.re + self.c1*alpha_i*self.phi_0.du
                     || (phi_i.re >= phi_im1.re && i > 1) {
@@ -192,3 +193,134 @@ impl LineSearch {
     }
 }
 
+
+#[cfg(test)]
+mod tests {
+    use super::LineSearch;
+    use super::Dual;
+    use super::DualScalar;
+    use ndarray::{Array1, arr1};
+    use super::StepValues;
+    use approx::assert_abs_diff_eq;
+
+
+    fn obj_func(x: &Array1<f64>) -> Dual {
+        let mut d1 = Dual::new(3);
+        let mut d2 = Dual::new(3);
+        let mut d3 = Dual::new(3);
+
+        d1.du[0] = 1.0;
+        d2.du[1] = 1.0;
+        d3.du[2] = 1.0;
+
+        d1.re = x[0];
+        d2.re = x[1];
+        d3.re = x[2];
+
+        d1 = d1 - 10.0;
+        d2 = d2 - 2.0;
+        d3 = d3 + 5.0;
+
+        let d4 = (d1).powi(2) + d2.powi(2) + d3.powi(2);
+
+        d4
+    }
+
+    // Tests the overall behavior of the line search algorithm. The line search
+    // algorithm is a 1D minimizer algorithm. The minimum point is at
+    // [10, 2, -5]. Starting from [0, 0, 0] and with a step direction of
+    // [10, 2, -5] then the factor of the step direction that gives a minimum
+    // value for the function is "1". Thus, we check that the line search
+    // algorithm finds a step direction factor of "1" and that it produces
+    // a "0" for the objective function.
+    #[test]
+    fn test_line_search_algorithm() {
+        let xk = arr1::<f64>(&[0.0, 0.0, 0.0]);
+        let fk = obj_func(&xk);
+        let pk = arr1::<f64>(&[10.0, 2.0, -5.0]);
+        let mut line_search = LineSearch::new(obj_func);
+
+        let step = StepValues{x_k: &xk, f_k: &fk, p_k: &pk, alpha_1: 1.0};
+
+        let alpha_star = line_search.find_alpha(step);
+
+        let new_xk = &xk + alpha_star*&pk;
+        let new_fk = obj_func(&new_xk);
+
+        assert_abs_diff_eq!(alpha_star, 1.0);
+        assert_abs_diff_eq!(new_fk.re, 0.0);
+    }
+
+    // Under the specified initial position, step, and objective function
+    // the value of the objective function is 129 and its gradient
+    // value is [-20, -4, 10] so the dot product of the gradient and step
+    // direction is -200 - 8 - 50 = -258
+    #[test]
+    fn test_set_phi0() {
+        let xk = arr1::<f64>(&[0.0, 0.0, 0.0]);
+        let fk = obj_func(&xk);
+        let pk = arr1::<f64>(&[10.0, 2.0, -5.0]);
+        let mut line_search = LineSearch::new(obj_func);
+
+        let step = StepValues{x_k: &xk, f_k: &fk, p_k: &pk, alpha_1: 1.0};
+
+        line_search.set_phi_0(&step);
+
+        let phi_0 = line_search.phi_0;
+
+        assert_abs_diff_eq!(phi_0.re, 129.0);
+        assert_abs_diff_eq!(phi_0.du, -258.0);
+    }
+
+
+    #[test]
+    fn test_eval_phi() {
+        let xk = arr1::<f64>(&[0.0, 0.0, 0.0]);
+        let fk = obj_func(&xk);
+        let pk = arr1::<f64>(&[10.0, 2.0, -5.0]);
+        let mut line_search = LineSearch::new(obj_func);
+
+        let step = StepValues{x_k: &xk, f_k: &fk, p_k: &pk, alpha_1: 1.0};
+        line_search.set_phi_0(&step);
+
+        // let's see if this function really gives phi_0 when alpha is 0.0
+        let phi_0 = line_search.eval_phi(&step, 0.0);
+        assert_abs_diff_eq!(phi_0.re, 129.0);
+        assert_abs_diff_eq!(phi_0.du, -258.0);
+
+        // when alpha is 1.0, we reach the minimum where the function value is
+        // 0.0 and the gradient is 0.0
+        let phi_1 = line_search.eval_phi(&step, 1.0);
+        assert_abs_diff_eq!(phi_1.re, 0.0);
+        assert_abs_diff_eq!(phi_1.du, 0.0);
+    }
+
+
+    #[test]
+    fn test_cubic_interpolation() {
+        let xk = arr1::<f64>(&[0.0, 0.0, 0.0]);
+        let fk = obj_func(&xk);
+        let pk = arr1::<f64>(&[10.0, 2.0, -5.0]);
+        let mut line_search = LineSearch::new(obj_func);
+
+        let step = StepValues{x_k: &xk, f_k: &fk, p_k: &pk, alpha_1: 1.0};
+
+        let alpha_im1 = 0.0;
+        let phi_im1 = DualScalar{re: 1.0, du: -1.0};
+        let alpha_i = 1.0;
+        let phi_i = DualScalar{re: -1.0, du: 1.0};
+
+        let new_alpha = line_search.cubic_interpolation(alpha_im1,
+                                                        &phi_im1,
+                                                        alpha_i,
+                                                        &phi_i);
+        // from testing the formula manually, the resulting alpha is
+        // 0.9235635441915183
+        assert_abs_diff_eq!(new_alpha, 0.9235635441915183);
+    }
+
+
+    // I don't include tests for line_search and zoom since they seem to give
+    // good results from test test_line_search_algorithm.
+
+}
