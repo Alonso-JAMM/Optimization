@@ -301,9 +301,7 @@ mod tests {
         let xk = arr1::<f64>(&[0.0, 0.0, 0.0]);
         let fk = obj_func(&xk);
         let pk = arr1::<f64>(&[10.0, 2.0, -5.0]);
-        let mut line_search = LineSearch::new(obj_func);
-
-        let step = StepValues{x_k: &xk, f_k: &fk, p_k: &pk, alpha_1: 1.0};
+        let line_search = LineSearch::new(obj_func);
 
         let alpha_im1 = 0.0;
         let phi_im1 = DualScalar{re: 1.0, du: -1.0};
