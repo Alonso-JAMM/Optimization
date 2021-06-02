@@ -299,8 +299,6 @@ mod tests {
     #[test]
     fn test_cubic_interpolation() {
         let xk = arr1::<f64>(&[0.0, 0.0, 0.0]);
-        let fk = obj_func(&xk);
-        let pk = arr1::<f64>(&[10.0, 2.0, -5.0]);
         let line_search = LineSearch::new(obj_func);
 
         let alpha_im1 = 0.0;
@@ -316,7 +314,6 @@ mod tests {
         // 0.9235635441915183
         assert_abs_diff_eq!(new_alpha, 0.9235635441915183);
     }
-
 
     // I don't include tests for line_search and zoom since they seem to give
     // good results from test test_line_search_algorithm.
