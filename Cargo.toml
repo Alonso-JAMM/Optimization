@@ -1,6 +1,6 @@
 [package]
 name = "optimization"
-version = "0.4.1"
+version = "0.4.2"
 authors = ["alonso"]
 edition = "2018"
 
@@ -13,3 +13,9 @@ ndarray= "0.15.2"
 
 [dev-dependencies]
 approx = "0.4"
+criterion = "0.3"
+
+
+[[bench]]
+name = "steepest_descent_bench"
+harness = false
