@@ -4,13 +4,12 @@
 
 pub mod number_system;
 
-pub mod line_search;
+mod line_search;
+use line_search::LineSearch;
+use line_search::StepValues;
 
+mod solution;
+use solution::Solution;
 
-#[cfg(test)]
-mod tests {
-    #[test]
-    fn it_works() {
-        assert_eq!(2 + 2, 4);
-    }
-}
+mod steepest_descent;
+pub use steepest_descent::SteepestDescent;
