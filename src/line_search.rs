@@ -6,6 +6,7 @@
 use crate::number_system::Dual;
 use crate::number_system::DualScalar;
 use ndarray::Array1;
+use std::cell::Cell;
 
 
 // Contains the values for each iteration step
@@ -22,6 +23,7 @@ pub struct LineSearch {
     pub c2: f64,
     pub i_max: u32,
     pub alpha_max: f64,
+    pub func_calls: Cell<u32>,
     f: fn(&Array1<f64>) -> Dual,
     phi_0: DualScalar,
 }
@@ -34,6 +36,7 @@ impl LineSearch {
             c2: 0.9,
             i_max: 100,
             alpha_max: 1e3,
+            func_calls: Cell::new(0),
             f: func,
             phi_0: DualScalar::new(),
         }
@@ -176,6 +179,7 @@ impl LineSearch {
 
             let xk_apk = x_k + alpha*p_k;
             let eval = (self.f)(&xk_apk);
+            self.func_calls.set(self.func_calls.get() + 1);
 
             new_phi.re = eval.re;
             new_phi.du = eval.du.dot(p_k);

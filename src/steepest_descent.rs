@@ -95,7 +95,7 @@ impl SteepestDescent {
 
         solution.x.assign(&self.x_k);
         solution.iter_num = k;
-        solution.func_evals = self.f_calls.get();
+        solution.func_evals = self.f_calls.get() + line_search.func_calls.get();
         solution
     }
 
@@ -115,11 +115,7 @@ impl SteepestDescent {
     }
 
     fn eval_func(&self, x: &Array1<f64>) -> Dual {
-        //TODO: Need to get a way of gathering number of function calls from
-        // the overall algorithm (function calls occur here and in the line_search
-        // algorithm). A possible solution would be to count them separately and
-        // then add them at the end of the procedure (before returning the solution)
-//         self.f_calls.set(self.f_calls.get() + 1);
+        self.f_calls.set(self.f_calls.get() + 1);
         (self.func)(x)
     }
 }
