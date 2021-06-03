@@ -34,9 +34,13 @@ fn test_steepest_descent() {
     let sol = min.minimize(&x0);
 
     assert!(sol.success);
-    // Make sure the solution are close to the "real solutions" until 6
-    // decimal places
-    assert_abs_diff_eq!(sol.x[0], 1.318127, epsilon = 0.000001);
-    assert_abs_diff_eq!(sol.x[1], 0.201358, epsilon = 0.000001);
-    assert_abs_diff_eq!(sol.x[2], 1.600000, epsilon = 0.000001);
+    // Make sure the solution are close to the "real solutions" until 4
+    // decimal places (this method gives results less precise)
+    // analytical solutions for the problem are:
+    // x1 = acos(0.05/0.2) = 1.318116071652818
+    // x2 = asin(0.2)      = 0.2013579207903308
+    // x3 = sqrt(2.56)     = 1.6
+    assert_abs_diff_eq!(sol.x[0], 1.3181, epsilon = 0.0001);
+    assert_abs_diff_eq!(sol.x[1], 0.2013, epsilon = 0.0001);
+    assert_abs_diff_eq!(sol.x[2], 1.6000, epsilon = 0.0001);
 }
