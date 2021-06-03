@@ -13,3 +13,7 @@ use solution::Solution;
 
 mod steepest_descent;
 pub use steepest_descent::SteepestDescent;
+
+
+mod ncg;
+pub use ncg::NCG;

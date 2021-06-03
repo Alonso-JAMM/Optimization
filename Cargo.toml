@@ -1,6 +1,6 @@
 [package]
 name = "optimization"
-version = "0.5.1"
+version = "0.5.2"
 authors = ["alonso"]
 edition = "2018"
 
@@ -18,4 +18,8 @@ criterion = "0.3"
 
 [[bench]]
 name = "steepest_descent_bench"
+harness = false
+
+[[bench]]
+name = "ncg_bench"
 harness = false
