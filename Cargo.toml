@@ -1,6 +1,6 @@
 [package]
 name = "optimization"
-version = "0.5.3"
+version = "0.5.4"
 authors = ["alonso"]
 edition = "2018"
 

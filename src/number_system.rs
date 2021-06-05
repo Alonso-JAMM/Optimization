@@ -10,3 +10,8 @@ pub use dual_scalar::DualScalar;
 mod dual;
 mod dual_math;
 pub use dual::Dual;
+
+
+mod hyperdual;
+mod hyperdual_math;
+pub use hyperdual::HyperDual;
