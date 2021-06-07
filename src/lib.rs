@@ -4,6 +4,10 @@
 
 pub mod number_system;
 
+
+pub mod problem;
+
+
 mod line_search;
 use line_search::LineSearch;
 use line_search::StepValues;
