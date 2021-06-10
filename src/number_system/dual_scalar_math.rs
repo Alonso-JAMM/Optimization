@@ -7,13 +7,14 @@ use crate::number_system::DualScalar;
 
 
 impl DualScalar {
+    #[inline(always)]
     pub fn sin(&self) -> DualScalar {
         DualScalar {
             re: self.re.sin(),
             du: self.du * self.re.cos(),
         }
     }
-
+    #[inline(always)]
     pub fn cos(&self) -> DualScalar {
         DualScalar {
             re: self.re.cos(),
@@ -21,6 +22,7 @@ impl DualScalar {
         }
     }
 
+    #[inline(always)]
     pub fn powi(&self, n: i32) -> DualScalar {
         let m = f64::from(n);
         DualScalar {
