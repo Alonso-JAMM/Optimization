@@ -11,7 +11,7 @@ pub struct TestProblem {
 }
 
 
-// Implementation of the Objectie trait. The method `eval` is the method that
+// Implementation of the Objective trait. The method `eval` is the method that
 // actually evaluates the objective function. The methods `eval_real`, `grad`,
 // and `diff` will call `eval` in order to evaluate the function and then pick
 // the real or dual value of the result.
@@ -22,7 +22,7 @@ impl Objective for TestProblem {
         let x2 = &self.x[1];
         let x3 = &self.x[2];
 
-        let u1 = x1.cos()*x2.cos() - 0.05;
+        let u1 = x1.cos()*x2.sin() - 0.05;
         let u2 = x2.sin() - 0.2;
         let u3 = x3.powi(2) - 2.56;
 
@@ -36,6 +36,7 @@ impl Objective for TestProblem {
     fn update_x(&mut self, x: &Array1<f64>) {
         for i in 0..self.x.len() {
             self.x[i].re = x[i];
+            self.x[i].du = 0.0; // make sure we are removing any dual part
         }
     }
 
@@ -62,7 +63,6 @@ impl Gradient for TestProblem {
         self.eval().du
     }
 }
-
 
 
 // Here is an example implementation of the TestProblem.

@@ -17,5 +17,8 @@ pub struct Solution {
     pub iter_num: u32,
 
     // number of function evaluations
-    pub func_evals: u32,
+    pub f_evals: u32,
+
+    // number of gradient evaluations
+    pub f_grad_evals: u32,
 }
