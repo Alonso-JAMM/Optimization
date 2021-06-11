@@ -15,3 +15,8 @@ pub use dual::Dual;
 mod hyperdual;
 mod hyperdual_math;
 pub use hyperdual::HyperDual;
+
+
+mod hyperdual_scalar;
+mod hyperdual_scalar_math;
+pub use hyperdual_scalar::HyperDualScalar;
