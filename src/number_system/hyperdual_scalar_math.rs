@@ -9,27 +9,32 @@ use crate::number_system::HyperDualScalar as HDual;
 impl HDual {
     pub fn sin(&self) -> HDual {
         HDual {
-            real: self.real.sin(),
-            grad: self.grad * self.real.cos(),
-            hess: -self.real.sin()*self.grad*self.grad + self.real.cos()*self.hess,
+            re: self.re.sin(),
+            e1: self.e1 * self.re.cos(),
+            e2: self.e2 * self.re.cos(),
+            e1e2: self.re.cos() * self.e1e2
+                 -self.re.sin() * self.e1 * self.e2,
         }
     }
 
     pub fn cos(&self) -> HDual {
         HDual {
-            real: self.real.cos(),
-            grad: -self.grad * self.real.sin(),
-            hess: -self.real.cos()*self.grad*self.grad - self.real.sin()*self.hess,
+            re: self.re.cos(),
+            e1: -self.e1 * self.re.sin(),
+            e2: -self.e2 * self.re.sin(),
+            e1e2: -self.re.sin() * self.e1e2
+                  -self.re.cos() * self.e1 * self.e2 ,
         }
     }
 
     pub fn powi(&self, n: i32) -> HDual {
         let m = f64::from(n);
         HDual {
-            real: self.real.powi(n),
-            grad: m * self.real.powi(n-1) * self.grad,
-            hess: m * (m-1.0) * self.real.powi(n-2) * self.grad * self.grad
-                 + m * self.real.powi(n-1) * self.hess,
+            re: self.re.powi(n),
+            e1: m * self.re.powi(n-1) * self.e1,
+            e2: m * self.re.powi(n-1) * self.e2,
+            e1e2: m * (m-1.0) * self.re.powi(n-2) * self.e1 * self.e2
+                 + m * self.re.powi(n-1) * self.e1e2,
         }
     }
 
