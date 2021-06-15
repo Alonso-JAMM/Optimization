@@ -23,3 +23,6 @@ pub use ncg::NCG;
 
 mod bfgs;
 pub use bfgs::BFGS;
+
+mod trust_ncg;
+pub use trust_ncg::TrustNCG;

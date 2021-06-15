@@ -1,6 +1,6 @@
 [package]
 name = "optimization"
-version = "0.7.0"
+version = "0.7.1"
 authors = ["alonso"]
 edition = "2018"
 
@@ -26,4 +26,8 @@ harness = false
 
 [[bench]]
 name = "bfgs_bench"
+harness = false
+
+[[bench]]
+name = "trust_ncg_bench"
 harness = false
