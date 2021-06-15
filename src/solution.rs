@@ -21,4 +21,7 @@ pub struct Solution {
 
     // number of gradient evaluations
     pub f_grad_evals: u32,
+
+    // number of hessian evaluations
+    pub f_hess_evals: u32,
 }

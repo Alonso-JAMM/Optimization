@@ -72,6 +72,7 @@ impl SteepestDescent {
             iter_num: 0,
             f_evals: 0,
             f_grad_evals: 0,
+            f_hess_evals: 0,
         };
 
         let mut k: u32 = 1;
