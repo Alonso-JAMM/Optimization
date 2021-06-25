@@ -4,6 +4,7 @@
 
 pub mod number_system;
 
+pub mod geometry;
 
 pub mod problem;
 
