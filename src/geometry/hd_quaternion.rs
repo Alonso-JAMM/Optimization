@@ -62,8 +62,8 @@ impl HDQuaternion {
     /// axes
     pub fn from_angles(phi: HDual, theta: HDual, psi: HDual) -> HDQuaternion {
         let qz = HDQuaternion::from_z_angle(psi);
-        let qy = HDQuaternion::from_z_angle(theta);
-        let qx = HDQuaternion::from_z_angle(phi);
+        let qy = HDQuaternion::from_y_angle(theta);
+        let qx = HDQuaternion::from_x_angle(phi);
         qz*qy*qx
     }
 
