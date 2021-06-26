@@ -4,3 +4,7 @@
 
 mod hd_quaternion;
 pub use hd_quaternion::HDQuaternion;
+
+
+mod hd_vector;
+pub use hd_vector::HDVector;
