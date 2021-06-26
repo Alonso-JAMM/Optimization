@@ -210,6 +210,95 @@ impl Mul<&HDVector> for f64 {
 }
 
 
+impl Mul<HDual> for HDVector {
+    type Output = HDVector;
+    fn mul(self, other: HDual) -> HDVector {
+        HDVector {
+            x: self.x * other,
+            y: self.y * other,
+            z: self.z * other,
+        }
+    }
+}
+
+impl Mul<&HDual> for &HDVector {
+    type Output = HDVector;
+    fn mul(self, other: &HDual) -> HDVector {
+        HDVector {
+            x: self.x * other,
+            y: self.y * other,
+            z: self.z * other,
+        }
+    }
+}
+
+impl Mul<HDual> for &HDVector {
+    type Output = HDVector;
+    fn mul(self, other: HDual) -> HDVector {
+        HDVector {
+            x: self.x * other,
+            y: self.y * other,
+            z: self.z * other,
+        }
+    }
+}
+
+impl Mul<&HDual> for HDVector {
+    type Output = HDVector;
+    fn mul(self, other: &HDual) -> HDVector {
+        HDVector {
+            x: self.x * other,
+            y: self.y * other,
+            z: self.z * other,
+        }
+    }
+}
+
+impl Mul<HDVector> for HDual {
+    type Output = HDVector;
+    fn mul(self, other: HDVector) -> HDVector {
+        HDVector {
+            x: self * other.x,
+            y: self * other.y,
+            z: self * other.z,
+        }
+    }
+}
+
+impl Mul<&HDVector> for &HDual {
+    type Output = HDVector;
+    fn mul(self, other: &HDVector) -> HDVector {
+        HDVector {
+            x: self * other.x,
+            y: self * other.y,
+            z: self * other.z,
+        }
+    }
+}
+
+impl Mul<&HDVector> for HDual {
+    type Output = HDVector;
+    fn mul(self, other: &HDVector) -> HDVector {
+        HDVector {
+            x: self * other.x,
+            y: self * other.y,
+            z: self * other.z,
+        }
+    }
+}
+
+impl Mul<HDVector> for &HDual {
+    type Output = HDVector;
+    fn mul(self, other: HDVector) -> HDVector {
+        HDVector {
+            x: self * other.x,
+            y: self * other.y,
+            z: self * other.z,
+        }
+    }
+}
+
+
 impl Div<f64> for HDVector {
     type Output = HDVector;
     fn div(self, other: f64) -> HDVector {

@@ -261,6 +261,121 @@ fn f64_mul_borrow_hdvector() {
     assert_abs_diff_eq!(v.z.re, 6.0);
 }
 
+#[test]
+fn hdvector_mul_hdual() {
+    let x1 = HDual{re: 2.0, e1: 0.0, e2: 0.0, e1e2: 0.0};
+    let y1 = HDual{re: 2.0, e1: 0.0, e2: 0.0, e1e2: 0.0};
+    let z1 = HDual{re: 3.0, e1: 0.0, e2: 0.0, e1e2: 0.0};
+
+    let a = HDVector{x: x1, y: y1, z: z1};
+    let v = a * x1;
+
+    assert_abs_diff_eq!(v.x.re, 4.0);
+    assert_abs_diff_eq!(v.y.re, 4.0);
+    assert_abs_diff_eq!(v.z.re, 6.0);
+}
+
+#[test]
+fn borrow_hdvector_mul_borrow_hdual() {
+    let x1 = HDual{re: 2.0, e1: 0.0, e2: 0.0, e1e2: 0.0};
+    let y1 = HDual{re: 2.0, e1: 0.0, e2: 0.0, e1e2: 0.0};
+    let z1 = HDual{re: 3.0, e1: 0.0, e2: 0.0, e1e2: 0.0};
+
+    let a = HDVector{x: x1, y: y1, z: z1};
+    let v = &a * &x1;
+
+    assert_abs_diff_eq!(v.x.re, 4.0);
+    assert_abs_diff_eq!(v.y.re, 4.0);
+    assert_abs_diff_eq!(v.z.re, 6.0);
+}
+
+#[test]
+fn hdvector_mul_borrow_hdual() {
+    let x1 = HDual{re: 2.0, e1: 0.0, e2: 0.0, e1e2: 0.0};
+    let y1 = HDual{re: 2.0, e1: 0.0, e2: 0.0, e1e2: 0.0};
+    let z1 = HDual{re: 3.0, e1: 0.0, e2: 0.0, e1e2: 0.0};
+
+    let a = HDVector{x: x1, y: y1, z: z1};
+    let v = a * &x1;
+
+    assert_abs_diff_eq!(v.x.re, 4.0);
+    assert_abs_diff_eq!(v.y.re, 4.0);
+    assert_abs_diff_eq!(v.z.re, 6.0);
+}
+
+#[test]
+fn borrow_hdvector_mul_hdual() {
+    let x1 = HDual{re: 2.0, e1: 0.0, e2: 0.0, e1e2: 0.0};
+    let y1 = HDual{re: 2.0, e1: 0.0, e2: 0.0, e1e2: 0.0};
+    let z1 = HDual{re: 3.0, e1: 0.0, e2: 0.0, e1e2: 0.0};
+
+    let a = HDVector{x: x1, y: y1, z: z1};
+    let v = &a * x1;
+
+    assert_abs_diff_eq!(v.x.re, 4.0);
+    assert_abs_diff_eq!(v.y.re, 4.0);
+    assert_abs_diff_eq!(v.z.re, 6.0);
+}
+
+
+#[test]
+fn hdual_mul_hdvector() {
+    let x1 = HDual{re: 2.0, e1: 0.0, e2: 0.0, e1e2: 0.0};
+    let y1 = HDual{re: 2.0, e1: 0.0, e2: 0.0, e1e2: 0.0};
+    let z1 = HDual{re: 3.0, e1: 0.0, e2: 0.0, e1e2: 0.0};
+
+    let a = HDVector{x: x1, y: y1, z: z1};
+    let v = x1 * a;
+
+    assert_abs_diff_eq!(v.x.re, 4.0);
+    assert_abs_diff_eq!(v.y.re, 4.0);
+    assert_abs_diff_eq!(v.z.re, 6.0);
+}
+
+#[test]
+fn borrow_hdual_mul_borrow_hdvector() {
+    let x1 = HDual{re: 2.0, e1: 0.0, e2: 0.0, e1e2: 0.0};
+    let y1 = HDual{re: 2.0, e1: 0.0, e2: 0.0, e1e2: 0.0};
+    let z1 = HDual{re: 3.0, e1: 0.0, e2: 0.0, e1e2: 0.0};
+
+    let a = HDVector{x: x1, y: y1, z: z1};
+    let v = &x1 * &a;
+
+    assert_abs_diff_eq!(v.x.re, 4.0);
+    assert_abs_diff_eq!(v.y.re, 4.0);
+    assert_abs_diff_eq!(v.z.re, 6.0);
+}
+
+#[test]
+fn hdual_mul_borrow_hdvector() {
+    let x1 = HDual{re: 2.0, e1: 0.0, e2: 0.0, e1e2: 0.0};
+    let y1 = HDual{re: 2.0, e1: 0.0, e2: 0.0, e1e2: 0.0};
+    let z1 = HDual{re: 3.0, e1: 0.0, e2: 0.0, e1e2: 0.0};
+
+    let a = HDVector{x: x1, y: y1, z: z1};
+    let v = x1 * &a;
+
+    assert_abs_diff_eq!(v.x.re, 4.0);
+    assert_abs_diff_eq!(v.y.re, 4.0);
+    assert_abs_diff_eq!(v.z.re, 6.0);
+}
+
+
+#[test]
+fn borrow_hdual_mul_hdvector() {
+    let x1 = HDual{re: 2.0, e1: 0.0, e2: 0.0, e1e2: 0.0};
+    let y1 = HDual{re: 2.0, e1: 0.0, e2: 0.0, e1e2: 0.0};
+    let z1 = HDual{re: 3.0, e1: 0.0, e2: 0.0, e1e2: 0.0};
+
+    let a = HDVector{x: x1, y: y1, z: z1};
+    let v = &x1 * a;
+
+    assert_abs_diff_eq!(v.x.re, 4.0);
+    assert_abs_diff_eq!(v.y.re, 4.0);
+    assert_abs_diff_eq!(v.z.re, 6.0);
+}
+
+
 
 #[test]
 fn hdvector_div_f64() {
