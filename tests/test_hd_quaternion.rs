@@ -1,5 +1,5 @@
 use optimization::number_system::HyperDualScalar as HDual;
-use optimization::geometry::HDQuaternion;
+use optimization::geometry::{HDQuaternion, HDVector};
 use approx::assert_abs_diff_eq;
 
 
@@ -59,6 +59,22 @@ fn invue() {
     assert_abs_diff_eq!(q.q3.re, 1.0/2.0_f64.sqrt());
 }
 
+#[test]
+fn mul_vec() {
+    let theta = HDual{re: std::f64::consts::PI, e1: 0.0, e2: 0.0, e1e2: 0.0};
+    let phi = HDual{re: std::f64::consts::PI, e1: 0.0, e2: 0.0, e1e2: 0.0};
+    let x = HDual{re: 2.0, e1: 0.0, e2: 0.0, e1e2: 0.0};
+    let y = HDual{re: 3.0, e1: 0.0, e2: 0.0, e1e2: 0.0};
+    let z = HDual{re: 4.0, e1: 0.0, e2: 0.0, e1e2: 0.0};
+
+    let q = HDQuaternion::from_angles(theta/2.0, phi/2.0, HDual::new());
+    let a = HDVector{x, y, z};
+    let v = q.mul_vec(&a);
+
+    assert_abs_diff_eq!(v.x.re, 3.0, epsilon = 1e-12);
+    assert_abs_diff_eq!(v.y.re, -4.0, epsilon = 1e-12);
+    assert_abs_diff_eq!(v.z.re, -2.0, epsilon = 1e-12);
+}
 
 
 #[test]

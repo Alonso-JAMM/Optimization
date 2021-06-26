@@ -6,6 +6,7 @@
 use std::ops::{Add, Sub, Neg, Mul, Div};
 
 use crate::number_system::HyperDualScalar as HDual;
+use crate::geometry::HDVector;
 
 
 /// Quaternion where all of its components are scalar hyper dual numbers.
@@ -76,6 +77,18 @@ impl HDQuaternion {
             q2: -self.q2,
             q3: self.q3,
         }
+    }
+
+    /// Multiplicate a vector which is the same than rotating the vector.
+    /// https://en.wikipedia.org/wiki/Conversion_between_quaternions_and_Euler_angles
+    pub fn mul_vec(&self, v: &HDVector) -> HDVector {
+        // vector part of the quaternion
+        let q_vec = HDVector::from_quaternion(self);
+        // real part of the quaternion
+        let q_real = self.q3;
+        let t = 2.0 * q_vec.cross(v);
+
+        v + q_real*&t + q_vec.cross(&t)
     }
 }
 
