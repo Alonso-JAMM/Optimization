@@ -227,6 +227,7 @@ mod tests {
     // error functions in a least-squares problem.
     pub struct ProblemObjective {
         x: Vec<DualScalar>,
+        value: DualScalar,
     }
 
 
@@ -235,8 +236,7 @@ mod tests {
     // and `diff` will call `eval` in order to evaluate the function and then pick
     // the real or dual value of the result.
     impl Objective for ProblemObjective {
-        type Output = DualScalar;
-        fn eval(&self) -> DualScalar {
+        fn eval(&mut self) {
             let x1 = &self.x[0];
             let x2 = &self.x[1];
             let x3 = &self.x[2];
@@ -245,11 +245,12 @@ mod tests {
             let u2 = x2 - 2.0;
             let u3 = x3 + 5.0;
 
-            u1.powi(2) + u2.powi(2) + u3.powi(2)
+            self.value = u1.powi(2) + u2.powi(2) + u3.powi(2);
         }
 
-        fn eval_real(&self) -> f64 {
-            self.eval().re
+        fn eval_real(&mut self) -> f64 {
+            self.eval();
+            self.value.re
         }
 
         fn update_x(&mut self, x: &Array1<f64>) {
@@ -273,13 +274,15 @@ mod tests {
         fn grad(&mut self, output: &mut Array1<f64>) {
             for i in 0..self.x.len() {
                 self.x[i].du = 1.0;
-                output[i] = self.eval().du;
+                self.eval();
+                output[i] = self.value.du;
                 self.x[i].du = 0.0;
             }
         }
 
-        fn diff(&self) -> f64 {
-            self.eval().du
+        fn diff(&mut self) -> f64 {
+            self.eval();
+            self.value.du
         }
     }
 
@@ -303,7 +306,7 @@ mod tests {
         x.push(b);
         x.push(c);
 
-        let mut problem = ProblemObjective{x};
+        let mut problem = ProblemObjective{x, value: DualScalar::new()};
 
 
         fk.re = problem.eval_real();
@@ -342,7 +345,7 @@ mod tests {
         x.push(b);
         x.push(c);
 
-        let mut problem = ProblemObjective{x};
+        let mut problem = ProblemObjective{x, value: DualScalar::new()};
 
         fk.re = problem.eval_real();
         problem.grad(&mut fk.du);
@@ -375,7 +378,7 @@ mod tests {
         x.push(b);
         x.push(c);
 
-        let mut problem = ProblemObjective{x};
+        let mut problem = ProblemObjective{x, value: DualScalar::new()};
 
         fk.re = problem.eval_real();
         problem.grad(&mut fk.du);

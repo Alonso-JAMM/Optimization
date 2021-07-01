@@ -20,16 +20,16 @@
 //!// error functions in a least-squares problem.
 //!pub struct TestProblem {
 //!    x: Vec<DualScalar>,
+//!    value: DualScalar,
 //!}
 //!
 //!
-//!// Implementation of the Objectie trait. The method `eval` is the method that
+//!// Implementation of the Objective trait. The method `eval` is the method that
 //!// actually evaluates the objective function. The methods `eval_real`, `grad`,
 //!// and `diff` will call `eval` in order to evaluate the function and then pick
 //!// the real or dual value of the result.
 //!impl Objective for TestProblem {
-//!    type Output = DualScalar;
-//!    fn eval(&self) -> DualScalar {
+//!    fn eval(&mut self) {
 //!        let x1 = &self.x[0];
 //!        let x2 = &self.x[1];
 //!        let x3 = &self.x[2];
@@ -38,16 +38,18 @@
 //!        let u2 = x2.sin() - 0.2;
 //!        let u3 = x3.powi(2) - 2.56;
 //!
-//!        u1.powi(2) + u2.powi(2) + u3.powi(2)
+//!        self.value = u1.powi(2) + u2.powi(2) + u3.powi(2)
 //!    }
 //!
-//!    fn eval_real(&self) -> f64 {
-//!        self.eval().re
+//!    fn eval_real(&mut self) -> f64 {
+//!        self.eval();
+//!        self.value.re
 //!    }
 //!
 //!    fn update_x(&mut self, x: &Array1<f64>) {
 //!        for i in 0..self.x.len() {
 //!            self.x[i].re = x[i];
+//!            self.x[i].du = 0.0; // make sure we are removing any dual part
 //!        }
 //!    }
 //!
@@ -65,13 +67,15 @@
 //!    fn grad(&mut self, output: &mut Array1<f64>) {
 //!        for i in 0..self.x.len() {
 //!            self.x[i].du = 1.0;
-//!            output[i] = self.eval().du;
+//!            self.eval();
+//!            output[i] = self.value.du;
 //!            self.x[i].du = 0.0;
 //!        }
 //!    }
 //!
-//!    fn diff(&self) -> f64 {
-//!        self.eval().du
+//!    fn diff(&mut self) -> f64 {
+//!        self.eval();
+//!        self.value.du
 //!    }
 //!}
 //!
@@ -91,11 +95,11 @@
 //!    x.push(b);
 //!    x.push(c);
 //!
-//!    let mut problem = TestProblem{x};
-//!    let val = problem.eval();
+//!    let mut problem = TestProblem{x, value: DualScalar::new()};
+//!    let val = problem.eval_real();
 //!    problem.grad(&mut output);
 //!    println!("current position: {}", x0);
-//!    println!("objective function value: {}", val.re);
+//!    println!("objective function value: {}", val);
 //!    println!("gradient of objective function is: {}", output);
 //!}
 //! ```
@@ -109,21 +113,17 @@ use ndarray::{Array1, Array2};
 /// minimization algorithms. Thus the algorithms can work for different
 /// objective functions without much trouble.
 pub trait Objective {
-    /// The type used by the objective function internally to calculate derivatives.
-    /// For example, this type could be `f64`, `dual`, or `hyperdual`.
-    type Output;
-
-    /// The method used to evaluate the objective function. This method
-    /// will use the internal type (`f64`, `dual`, or `hyperdual`). This method
+    /// The method used to evaluate the objective function. The intended use of
+    /// this method is that the problem stores internally the objective function
+    /// value, gradient, hessian, etc so that they can later be retrieved.
     /// assumes that the vector containing the values of the variables was
     /// already updated before being called.
-    fn eval(&self) -> Self::Output;
+    fn eval(&mut self);
 
-    /// This method is similar to `eval` just that it will always return a `f64`.
+    /// This method will retrieve the objective function value after being evaluated.
     /// The minimization algorithms will use this method internally since the
-    /// internal type could be anything. This method also assumes that vector
-    /// containing the variables values is updated before being called.
-    fn eval_real(&self) -> f64;
+    /// internal type could be anything.
+    fn eval_real(&mut self) -> f64;
 
     /// Method that updates the internal vector containing the variables of the
     /// objective function.
@@ -150,7 +150,7 @@ pub trait Gradient {
     /// This method calculates the 1D derivative of the objective function.
     /// This method is useful to get the derivative with respect of `alpha` when
     /// `x + alpha*p` is evaluated
-    fn diff(&self) -> f64;
+    fn diff(&mut self) -> f64;
 }
 
 

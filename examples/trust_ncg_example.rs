@@ -9,6 +9,7 @@ use optimization::TrustNCG;
 // error functions in a least-squares problem.
 pub struct ProblemObjective {
     x: Vec<HDual>,
+    value: HDual,
 }
 
 
@@ -17,8 +18,7 @@ pub struct ProblemObjective {
 // and `diff` will call `eval` in order to evaluate the function and then pick
 // the re or dual value of the result.
 impl Objective for ProblemObjective {
-    type Output = HDual;
-    fn eval(&self) -> HDual {
+    fn eval(&mut self) {
         let x1 = &self.x[0];
         let x2 = &self.x[1];
         let x3 = &self.x[2];
@@ -27,11 +27,12 @@ impl Objective for ProblemObjective {
         let u2 = x2.sin() - 0.2;
         let u3 = x3.powi(2) - 2.56;
 
-        u1.powi(2) + u2.powi(2) + u3.powi(2)
+        self.value = u1.powi(2) + u2.powi(2) + u3.powi(2);
     }
 
-    fn eval_real(&self) -> f64 {
-        self.eval().re
+    fn eval_real(&mut self) -> f64 {
+        self.eval();
+        self.value.re
     }
 
     fn update_x(&mut self, x: &Array1<f64>) {
@@ -55,13 +56,15 @@ impl Gradient for ProblemObjective {
     fn grad(&mut self, output: &mut Array1<f64>) {
         for i in 0..self.x.len() {
             self.x[i].e1 = 1.0;
-            output[i] = self.eval().e1;
+            self.eval();
+            output[i] = self.value.e1;
             self.x[i].e1 = 0.0;
         }
     }
 
-    fn diff(&self) -> f64 {
-        self.eval().e1
+    fn diff(&mut self) -> f64 {
+        self.eval();
+        self.value.e1
     }
 }
 
@@ -76,7 +79,8 @@ impl Hessian for ProblemObjective {
                 self.x[i].e1 = 1.0;
                 self.x[j].e2 = 1.0;
 
-                eval = self.eval().e1e2;
+                self.eval();
+                eval = self.value.e1e2;
                 output[[i,j]] = eval;
                 output[[j,i]] = eval;
 
@@ -101,7 +105,7 @@ fn main() {
     x.push(b);
     x.push(c);
 
-    let mut problem = ProblemObjective{x};
+    let mut problem = ProblemObjective{x, value: HDual::new()};
     let mut min = TrustNCG::new();
 
     let sol = min.minimize(&x0, &mut problem);
